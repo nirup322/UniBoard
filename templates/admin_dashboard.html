@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UniBoard — Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="topbar">
+        <span><span class="wordmark">UniBoard</span><span class="tagline">Administrator Console</span></span>
+        <nav><a href="/admin/add-student">Add Student</a><a href="/admin/logout">Logout</a></nav>
+    </div>
+
+    <div class="page">
+        <div class="card">
+            <h1>All Students <span class="count-badge">{{ students|length }} on record</span></h1>
+
+            <table class="register" style="margin-top:16px;">
+                <tr>
+                    <th>USN</th>
+                    <th>Name</th>
+                    <th>Semester</th>
+                    <th>Branch</th>
+                    <th></th>
+                </tr>
+                {% for s in students %}
+                <tr>
+                    <td>{{ s.usn }}</td>
+                    <td>{{ s.name }}</td>
+                    <td>{{ s.semester }}</td>
+                    <td>{{ s.branch }}</td>
+                    <td><a href="/admin/student/{{ s.usn }}" class="btn btn-ghost btn-sm">Manage</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+</html>

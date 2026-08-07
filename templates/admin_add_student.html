@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UniBoard — Add Student</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="topbar">
+        <span><span class="wordmark">UniBoard</span><span class="tagline">Administrator Console</span></span>
+        <nav><a href="/admin/dashboard">Dashboard</a><a href="/admin/logout">Logout</a></nav>
+    </div>
+
+    <div class="page-narrow">
+        <div class="link-row"><a href="/admin/dashboard">&larr; Back to Dashboard</a></div>
+        <div class="card">
+            <h1>Add Student</h1>
+            <p class="subtext" style="margin:0 0 20px;">Create a new entry in the register.</p>
+
+            {% if error %}
+                <div class="alert alert-error">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" action="/admin/add-student">
+                <div class="field">
+                    <label>USN</label>
+                    <input type="text" name="usn" placeholder="1AB21CS121" required>
+                </div>
+                <div class="field">
+                    <label>Name</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div class="field">
+                    <label>Date of Birth</label>
+                    <input type="date" name="dob" required>
+                </div>
+                <div class="field">
+                    <label>Semester</label>
+                    <input type="number" name="semester" min="1" max="8" required>
+                </div>
+                <div class="field">
+                    <label>Branch</label>
+                    <input type="text" name="branch" value="CSE" required>
+                </div>
+                <button type="submit" class="btn">Add Student</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

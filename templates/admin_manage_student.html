@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UniBoard — Manage {{ student.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="topbar">
+        <span><span class="wordmark">UniBoard</span><span class="tagline">Administrator Console</span></span>
+        <nav><a href="/admin/dashboard">Dashboard</a><a href="/admin/logout">Logout</a></nav>
+    </div>
+
+    <div class="page">
+        <div class="link-row"><a href="/admin/dashboard">&larr; Back to Dashboard</a></div>
+
+        <div class="card">
+            {% if message %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endif %}
+            {% if error %}
+                <div class="alert alert-error">{{ error }}</div>
+            {% endif %}
+
+            <h1>{{ student.name }}</h1>
+            <p class="meta-line">
+                USN&nbsp;&nbsp;<b>{{ student.usn }}</b> &nbsp;·&nbsp;
+                Branch&nbsp;&nbsp;<b>{{ student.branch }}</b> &nbsp;·&nbsp;
+                Semester&nbsp;&nbsp;<b>{{ student.semester }}</b>
+            </p>
+
+            <h3>Update Attendance — Current Semester</h3>
+            {% for row in attendance %}
+            <div class="edit-row">
+                <form method="POST" action="/admin/student/{{ student.usn }}/update-attendance">
+                    <input type="hidden" name="subject_code" value="{{ row.subject_code }}">
+                    <span class="subj">{{ row.subject_name }}</span>
+                    <span>
+                        <span class="lbl">Held</span><br>
+                        <input type="number" name="classes_held" value="{{ row.classes_held }}" min="0">
+                    </span>
+                    <span>
+                        <span class="lbl">Attended</span><br>
+                        <input type="number" name="classes_attended" value="{{ row.classes_attended }}" min="0">
+                    </span>
+                    <button type="submit" class="btn btn-sm">Update</button>
+                </form>
+            </div>
+            {% endfor %}
+
+            <h3>Past Semester Results</h3>
+            {% for sem, subjects in results.items() %}
+                <h4>Semester {{ sem }}</h4>
+                <table class="register">
+                    <tr>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                        <th>Grade</th>
+                    </tr>
+                    {% for row in subjects %}
+                    <tr>
+                        <td>{{ row.subject_name }}</td>
+                        <td>{{ row.marks }}</td>
+                        <td>
+                            <span class="stamp {% if row.grade in ['A+','A'] %}stamp-a{% elif row.grade == 'F' %}stamp-f{% else %}stamp-b{% endif %}">{{ row.grade }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% endfor %}
+
+            <h3>Add / Update a Result</h3>
+            <form method="POST" action="/admin/student/{{ student.usn }}/add-result">
+                <div class="field">
+                    <label>Semester</label>
+                    <input type="number" name="semester" min="1" max="8" required>
+                </div>
+                <div class="field">
+                    <label>Subject</label>
+                    <select name="subject_code" required>
+                        <option value="" disabled selected>Select a subject&hellip;</option>
+                        {% for subj in all_subjects %}
+                        <option value="{{ subj.subject_code }}">Sem {{ subj.semester }} — {{ subj.subject_name }} ({{ subj.subject_code }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="field">
+                    <label>Marks</label>
+                    <input type="number" name="marks" min="0" max="100" required>
+                </div>
+                <button type="submit" class="btn">Save Result</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

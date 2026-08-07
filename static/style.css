@@ -1,0 +1,277 @@
+/* ============================================================
+   UniBoard — Design tokens
+   Academic-register aesthetic: ledger lines, stamped grades,
+   typewriter data. Not a generic SaaS dashboard.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --paper:      #EEF1EC;
+  --paper-card: #F7F8F5;
+  --ink:        #1C2B3A;
+  --navy:       #23406B;
+  --navy-deep:  #16283F;
+  --brass:      #B08D3E;
+  --brass-dim:  #DCC98A;
+  --maroon:     #8C2F39;
+  --line:       #C9D0C6;
+  --line-soft:  #DEE3DA;
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono:    'IBM Plex Mono', 'Courier New', monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ---------- Letterhead top bar ---------- */
+.topbar {
+  background: var(--navy-deep);
+  color: #EDE9DD;
+  padding: 18px 32px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 3px solid var(--brass);
+}
+
+.topbar .wordmark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: 0.02em;
+  color: #F5F2E8;
+  text-decoration: none;
+}
+
+.topbar .tagline {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--brass-dim);
+  margin-left: 10px;
+}
+
+.topbar nav a {
+  color: #D8DEE9;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  text-decoration: none;
+  margin-left: 20px;
+  border-bottom: 1px solid transparent;
+}
+.topbar nav a:hover { border-bottom-color: var(--brass); color: #fff; }
+
+/* ---------- Page shell ---------- */
+.page {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+.page-narrow {
+  max-width: 460px;
+  margin: 0 auto;
+  padding: 60px 24px;
+}
+
+/* ---------- Ledger card ---------- */
+.card {
+  background: var(--paper-card);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 32px;
+  box-shadow: 0 1px 0 var(--line-soft), 0 8px 24px -18px rgba(28,43,58,0.35);
+}
+
+.card + .card { margin-top: 24px; }
+
+/* ---------- Headings ---------- */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  color: var(--navy-deep);
+  margin: 0 0 4px;
+}
+h1 { font-size: 28px; font-weight: 700; }
+h2 { font-size: 21px; font-weight: 600; }
+h3 {
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--navy);
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+h4 {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--brass);
+  margin-top: 20px;
+}
+
+.subtext {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: #5C6B78;
+}
+
+.meta-line {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--ink);
+  line-height: 1.8;
+}
+.meta-line b { color: var(--navy-deep); }
+
+/* ---------- Ledger register table ---------- */
+table.register {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+}
+table.register th {
+  text-align: left;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--navy);
+  border-bottom: 2px solid var(--navy);
+  padding: 8px 10px;
+}
+table.register td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--ink);
+}
+table.register tr:hover td { background: #F1EEDF; }
+
+.pct-low { color: var(--maroon); font-weight: 600; }
+.pct-ok  { color: var(--ink); }
+
+/* ---------- Stamp badge (signature element) ---------- */
+.stamp {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 12px;
+  padding: 3px 9px;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  transform: rotate(-3deg);
+  letter-spacing: 0.04em;
+}
+.stamp-a { color: var(--navy); }
+.stamp-b { color: var(--brass); }
+.stamp-f { color: var(--maroon); }
+
+/* ---------- Forms ---------- */
+.field { margin-bottom: 18px; }
+.field label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.field input, .field select {
+  width: 100%;
+  padding: 9px 11px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: #fff;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--ink);
+}
+.field input:focus, .field select:focus {
+  outline: 2px solid var(--brass);
+  outline-offset: 1px;
+  border-color: var(--brass);
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 10px 20px;
+  border-radius: 2px;
+  border: 1px solid var(--navy);
+  background: var(--navy);
+  color: #F5F2E8;
+  cursor: pointer;
+  text-decoration: none;
+}
+.btn:hover { background: var(--navy-deep); }
+.btn:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+
+.btn-sm { padding: 6px 12px; font-size: 12.5px; }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--navy);
+  border: 1px solid var(--line);
+}
+.btn-ghost:hover { border-color: var(--navy); background: #fff; }
+
+/* ---------- Inline attendance-edit row ---------- */
+.edit-row form {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.edit-row .subj { font-family: var(--font-mono); font-size: 13.5px; flex: 1; min-width: 200px; }
+.edit-row input[type=number] {
+  width: 64px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.edit-row .lbl { font-family: var(--font-mono); font-size: 10px; color: #5C6B78; text-transform: uppercase; }
+
+/* ---------- Alerts ---------- */
+.alert {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 10px 14px;
+  border-left: 3px solid;
+  margin-bottom: 20px;
+  border-radius: 2px;
+}
+.alert-error { background: #F6E9E9; border-color: var(--maroon); color: var(--maroon); }
+.alert-success { background: #EFF3E8; border-color: #4C6B3C; color: #3E5730; }
+
+/* ---------- Misc ---------- */
+.link-row { margin-bottom: 24px; font-family: var(--font-mono); font-size: 13px; }
+.link-row a { color: var(--navy); }
+.count-badge {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--brass);
+}

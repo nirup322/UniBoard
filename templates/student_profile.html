@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>UniBoard — {{ student.name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="topbar">
+        <span><span class="wordmark">UniBoard</span><span class="tagline">Student Record</span></span>
+        <nav><a href="/student/login">Logout</a></nav>
+    </div>
+
+    <div class="page">
+        <div class="card">
+            <h1>{{ student.name }}</h1>
+            <p class="meta-line">
+                USN&nbsp;&nbsp;<b>{{ student.usn }}</b> &nbsp;·&nbsp;
+                Branch&nbsp;&nbsp;<b>{{ student.branch }}</b> &nbsp;·&nbsp;
+                Semester&nbsp;&nbsp;<b>{{ student.semester }}</b>
+            </p>
+
+            <h3>Current Semester Attendance</h3>
+            <table class="register">
+                <tr>
+                    <th>Subject</th>
+                    <th>Held</th>
+                    <th>Attended</th>
+                    <th>Attendance</th>
+                </tr>
+                {% for row in attendance %}
+                <tr>
+                    <td>{{ row.subject_name }}</td>
+                    <td>{{ row.classes_held }}</td>
+                    <td>{{ row.classes_attended }}</td>
+                    <td class="{% if row.percentage < 75 %}pct-low{% else %}pct-ok{% endif %}">
+                        {{ row.percentage }}%{% if row.percentage < 75 %} — below minimum{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <h3>Past Semester Results</h3>
+            {% for sem, subjects in results.items() %}
+                <h4>Semester {{ sem }}</h4>
+                <table class="register">
+                    <tr>
+                        <th>Subject</th>
+                        <th>Marks</th>
+                        <th>Grade</th>
+                    </tr>
+                    {% for row in subjects %}
+                    <tr>
+                        <td>{{ row.subject_name }}</td>
+                        <td>{{ row.marks }}</td>
+                        <td>
+                            <span class="stamp {% if row.grade in ['A+','A'] %}stamp-a{% elif row.grade == 'F' %}stamp-f{% else %}stamp-b{% endif %}">{{ row.grade }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
