@@ -299,6 +299,8 @@ def admin_add_result(usn):
     conn.close()
 
     return redirect(f"/admin/student/{usn}")
+
+
 @app.route("/debug-student/<usn>")
 def debug_student(usn):
     """Temporary diagnostic route — shows the raw DOB value stored for a
@@ -319,6 +321,7 @@ def debug_student(usn):
         "dob_type": str(type(student["dob"])),
     }
 
+
 @app.route("/debug-env")
 def debug_env():
     """Temporary diagnostic route — shows exactly what DB_HOST the running
@@ -332,6 +335,7 @@ def debug_env():
         "DB_SSL_CA_raw": repr(os.environ.get("DB_SSL_CA")),
         "all_DB_keys": [k for k in os.environ if k.startswith("DB_")],
     }
+
 
 @app.route("/test-db")
 def test_db():
