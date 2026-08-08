@@ -299,6 +299,25 @@ def admin_add_result(usn):
     conn.close()
 
     return redirect(f"/admin/student/{usn}")
+@app.route("/debug-student/<usn>")
+def debug_student(usn):
+    """Temporary diagnostic route — shows the raw DOB value stored for a
+    student, to compare against what's being typed into the login form."""
+    conn = get_db_connection()
+    cur = conn.cursor(dictionary=True)
+    cur.execute("SELECT usn, name, dob FROM students WHERE usn = %s", (usn,))
+    student = cur.fetchone()
+    cur.close()
+    conn.close()
+    if student is None:
+        return {"error": "not found"}
+    return {
+        "usn": student["usn"],
+        "name": student["name"],
+        "dob_raw": repr(student["dob"]),
+        "dob_as_str": str(student["dob"]),
+        "dob_type": str(type(student["dob"])),
+    }
 
 @app.route("/debug-env")
 def debug_env():
