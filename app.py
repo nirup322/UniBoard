@@ -300,6 +300,19 @@ def admin_add_result(usn):
 
     return redirect(f"/admin/student/{usn}")
 
+@app.route("/debug-env")
+def debug_env():
+    """Temporary diagnostic route — shows exactly what DB_HOST the running
+    app sees, to debug why it might differ from what's set on Render.
+    We'll delete this once the issue is resolved."""
+    import os
+    return {
+        "DB_HOST_raw": repr(os.environ.get("DB_HOST")),
+        "DB_PORT_raw": repr(os.environ.get("DB_PORT")),
+        "DB_USER_raw": repr(os.environ.get("DB_USER")),
+        "DB_SSL_CA_raw": repr(os.environ.get("DB_SSL_CA")),
+        "all_DB_keys": [k for k in os.environ if k.startswith("DB_")],
+    }
 
 @app.route("/test-db")
 def test_db():
