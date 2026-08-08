@@ -5,13 +5,17 @@ Step 1: minimal setup, just to confirm Flask runs and can reach MySQL.
 
 from flask import Flask, render_template, request, redirect, session
 import mysql.connector
+import os
+from dotenv import load_dotenv
 from db import get_db_connection
 
-app = Flask(__name__)
-app.secret_key = "dev-secret-key-change-later"  # needed for sessions to work; we'll move this to a config/env var later
+load_dotenv()
 
-ADMIN_USERNAME = "admin"
-ADMIN_PASSWORD = "admin123"  # hardcoded for v1 simplicity — flag this as a known simplification
+app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-secret-key-change-later")
+
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
 
 
 @app.route("/")
