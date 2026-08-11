@@ -2,14 +2,6 @@
 
 A full-stack University Student Information and Academic Dashboard — built to let students check attendance and results, and give admins a simple console to manage both.
 
-**Live demo:** https://uniboard-kcwl.onrender.com
-**Screenshots / walkthrough:** [UniBoard-Screenshots](https://github.com/the7prajwal/UniBoard-Screenshots) — replace with your actual repo link once created
-
-![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)
-![Flask](https://img.shields.io/badge/Flask-3.0-000000?logo=flask&logoColor=white)
-![MySQL](https://img.shields.io/badge/MySQL-Aiven-4479A1?logo=mysql&logoColor=white)
-![Deployed on Render](https://img.shields.io/badge/Deployed%20on-Render-46E3B7?logo=render&logoColor=white)
-
 ---
 
 ## Overview
@@ -32,15 +24,22 @@ The database is seeded with 120 synthetic CSE students (via Faker, `en_IN` local
 - **Custom UI** — an "academic register" visual theme (Fraunces + IBM Plex Mono/Sans, navy/brass/maroon on pale paper, stamped grade badges) rather than a generic admin-panel look
 - **Security basics** — 100% parameterized SQL queries, session-guarded admin routes, secrets loaded from environment variables (never hardcoded)
 
+## Documentation
+
+| Doc                                   | Covers                                                        |
+|-----------------------------------------|------------------------------------------------------------------|
+| [ARCHITECTURE.md](./ARCHITECTURE.md)   | Tech stack, project structure, database schema, architecture diagram |
+| [DEPLOYMENT.md](./DEPLOYMENT.md)       | Local setup and Render deployment                              |
+
 ## Links
 
-| Resource                | Link                                                          |
-|--------------------------|----------------------------------------------------------------|
-| Live app                 | https://uniboard-kcwl.onrender.com                             |
-| Source code (this repo)  | https://github.com/the7prajwal/UniBoard                        |
-| Screenshots / demo walkthrough | https://github.com/the7prajwal/UniBoard-Screenshots (replace with actual link) |
-| Author                   | [@the7prajwal](https://github.com/the7prajwal)                 |
+| Resource                       | Link                                                                          |
+|----------------------------------|-----------------------------------------------------------------------------|
+| Live app                         | https://uniboard-kcwl.onrender.com                                          |
+| Source code (this repo)          | https://github.com/the7prajwal/UniBoard                                     |
+| Screenshots / demo walkthrough   | https://github.com/the7prajwal/UniBoard-Screenshots (replace with actual link) |
+| Author                           | [@the7prajwal](https://github.com/the7prajwal)                              |
 
 ## License
 
-Not yet licensed. Add a `LICENSE` file (e.g. MIT) if you want others to be able to reuse this code.
+Licensed under the [MIT License](./LICENSE).
