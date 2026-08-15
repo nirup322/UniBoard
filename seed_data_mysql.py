@@ -9,6 +9,7 @@ Default XAMPP MySQL credentials: user='root', password='' (empty)
 
 import random
 from faker import Faker
+from datetime import date
 from db import get_db_connection
 
 fake = Faker("en_IN")
@@ -70,7 +71,7 @@ def build_database():
     for i in range(1, NUM_STUDENTS + 1):
         usn = generate_usn(i)
         name = fake.name()
-        dob = fake.date_of_birth(minimum_age=19, maximum_age=22).isoformat()
+        dob = fake.date_between(start_date=date(2003, 1, 1), end_date=date(2005, 12, 31)).isoformat()
         students.append((usn, name, dob))
         cur.execute(
             "INSERT INTO students (usn, name, dob, semester, branch) VALUES (%s, %s, %s, %s, %s)",
