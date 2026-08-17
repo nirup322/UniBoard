@@ -36,8 +36,8 @@ The database is seeded with 120 synthetic CSE students (via Faker, `en_IN` local
 | Resource                       | Link                                                                          |
 |----------------------------------|-----------------------------------------------------------------------------|
 | Live app                         | https://uniboard-kcwl.onrender.com                                          |
-| Source code (this repo)          | https://github.com/the7prajwal/UniBoard                                     |
-| Screenshots / demo walkthrough   | https://github.com/the7prajwal/UniBoard-Screenshots (replace with actual link) |
+| Source code                      | https://github.com/the7prajwal/UniBoard                                     |
+| Screenshots / demo walkthrough   | https://github.com/the7prajwal/UniBoard/tree/main/Screenshots               |
 | Author                           | [@the7prajwal](https://github.com/the7prajwal)                              |
 
 ## License
