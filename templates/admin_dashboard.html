@@ -10,29 +10,91 @@
         <nav><a href="/admin/add-student">Add Student</a><a href="/admin/logout">Logout</a></nav>
     </div>
 
+    {# ---- Distribution stats, computed from the same list already passed in ---- #}
+    {% set by_branch = students|groupby('branch') %}
+    {% set by_semester = students|groupby('semester') %}
+    {% set max_sem_count = (by_semester|map(attribute='list')|map('length')|list|max) if students else 1 %}
+
     <div class="page">
         <div class="card">
             <h1>All Students <span class="count-badge">{{ students|length }} on record</span></h1>
 
-            <table class="register" style="margin-top:16px;">
-                <tr>
-                    <th>USN</th>
-                    <th>Name</th>
-                    <th>Semester</th>
-                    <th>Branch</th>
-                    <th></th>
-                </tr>
-                {% for s in students %}
-                <tr>
-                    <td>{{ s.usn }}</td>
-                    <td>{{ s.name }}</td>
-                    <td>{{ s.semester }}</td>
-                    <td>{{ s.branch }}</td>
-                    <td><a href="/admin/student/{{ s.usn }}" class="btn btn-ghost btn-sm">Manage</a></td>
-                </tr>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Students</div>
+                    <div class="stat-value">{{ students|length }}</div>
+                    <div class="stat-sub">on the register</div>
+                </div>
+                <div class="stat-card stat-card--brass">
+                    <div class="stat-label">Branches</div>
+                    <div class="stat-value">{{ by_branch|list|length }}</div>
+                    <div class="stat-sub">{{ by_branch|map(attribute='grouper')|join(', ') }}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Semesters Active</div>
+                    <div class="stat-value">{{ by_semester|list|length }}</div>
+                    <div class="stat-sub">distinct semesters on file</div>
+                </div>
+            </div>
+
+            <h3>Students per Semester</h3>
+            <div class="mini-chart">
+                {% for sem, group in by_semester %}
+                <div class="mc-col">
+                    <div class="mc-bar" style="height: {{ (group|length / max_sem_count * 100)|round(0, 'ceil')|int }}%;" title="{{ group|length }} students"></div>
+                    <span class="mc-label">S{{ sem }}</span>
+                </div>
                 {% endfor %}
-            </table>
+            </div>
+
+            <h3>Register</h3>
+            <div class="search-field">
+                <input type="text" id="studentSearch" placeholder="Search by USN or name…" autocomplete="off">
+            </div>
+
+            <div class="table-wrap">
+                <table class="register zebra" id="studentTable">
+                    <thead>
+                    <tr>
+                        <th>USN</th>
+                        <th>Name</th>
+                        <th>Semester</th>
+                        <th>Branch</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for s in students %}
+                    <tr data-search="{{ s.usn|lower }} {{ s.name|lower }}">
+                        <td>{{ s.usn }}</td>
+                        <td>{{ s.name }}</td>
+                        <td><span class="chip">Sem {{ s.semester }}</span></td>
+                        <td>{{ s.branch }}</td>
+                        <td><a href="/admin/student/{{ s.usn }}" class="btn btn-ghost btn-sm">Manage</a></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <p class="no-results" id="noResults">No students match that search.</p>
         </div>
     </div>
+
+    <script>
+        const searchInput = document.getElementById('studentSearch');
+        const rows = Array.from(document.querySelectorAll('#studentTable tbody tr'));
+        const noResults = document.getElementById('noResults');
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim().toLowerCase();
+            let visibleCount = 0;
+            rows.forEach(row => {
+                const match = row.dataset.search.includes(q);
+                row.style.display = match ? '' : 'none';
+                if (match) visibleCount++;
+            });
+            noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+        });
+    </script>
 </body>
 </html>

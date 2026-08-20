@@ -10,26 +10,33 @@
         <nav><a href="/admin/login">Admin</a></nav>
     </div>
 
-    <div class="page-narrow">
-        <div class="card">
-            <h1>Student Login</h1>
-            <p class="subtext" style="margin:0 0 20px;">Enter your USN and date of birth to view your record.</p>
+    <div class="split-auth">
+        <div class="split-auth__panel">
+            <p class="wordmark-lg">UniBoard</p>
+            <p class="panel-tagline">Student Information Register</p>
+            <p class="panel-note">Your attendance record, semester results, and academic standing — kept in one place, updated in real time by your department.</p>
+        </div>
+        <div class="split-auth__form">
+            <div class="card">
+                <h1>Student Login</h1>
+                <p class="subtext" style="margin:0 0 20px;">Enter your USN and date of birth to view your record.</p>
 
-            {% if error %}
-                <div class="alert alert-error">{{ error }}</div>
-            {% endif %}
+                {% if error %}
+                    <div class="alert alert-error">{{ error }}</div>
+                {% endif %}
 
-            <form method="POST" action="/student/login">
-                <div class="field">
-                    <label>USN</label>
-                    <input type="text" name="usn" placeholder="1AB21CS001" required>
-                </div>
-                <div class="field">
-                    <label>Date of Birth</label>
-                    <input type="date" name="dob" required>
-                </div>
-                <button type="submit" class="btn">Log In</button>
-            </form>
+                <form method="POST" action="/student/login">
+                    <div class="field">
+                        <label>USN</label>
+                        <input type="text" name="usn" placeholder="1AB21CS001" required>
+                    </div>
+                    <div class="field">
+                        <label>Date of Birth</label>
+                        <input type="date" name="dob" required>
+                    </div>
+                    <button type="submit" class="btn">Log In</button>
+                </form>
+            </div>
         </div>
     </div>
 </body>
