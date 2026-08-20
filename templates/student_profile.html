@@ -10,54 +10,109 @@
         <nav><a href="/student/login">Logout</a></nav>
     </div>
 
+    {# ---- Compute summary stats purely from data already passed in (no backend changes) ---- #}
+    {% set ns = namespace(att_sum=0, att_count=0, flagged=0, marks_sum=0, marks_count=0) %}
+    {% for row in attendance %}
+        {% set ns.att_sum = ns.att_sum + row.percentage %}
+        {% set ns.att_count = ns.att_count + 1 %}
+        {% if row.percentage < 75 %}{% set ns.flagged = ns.flagged + 1 %}{% endif %}
+    {% endfor %}
+    {% for sem, subjects in results.items() %}
+        {% for row in subjects %}
+            {% set ns.marks_sum = ns.marks_sum + row.marks %}
+            {% set ns.marks_count = ns.marks_count + 1 %}
+        {% endfor %}
+    {% endfor %}
+    {% set overall_att = (ns.att_sum / ns.att_count) if ns.att_count else 0 %}
+    {% set overall_avg_marks = (ns.marks_sum / ns.marks_count) if ns.marks_count else 0 %}
+    {% set name_parts = student.name.split(' ') %}
+    {% set initials = name_parts[0][0] ~ (name_parts[-1][0] if name_parts|length > 1 else '') %}
+    {% set latest_sem = results.keys()|list|sort|last if results else none %}
+
     <div class="page">
         <div class="card">
-            <h1>{{ student.name }}</h1>
-            <p class="meta-line">
-                USN&nbsp;&nbsp;<b>{{ student.usn }}</b> &nbsp;·&nbsp;
-                Branch&nbsp;&nbsp;<b>{{ student.branch }}</b> &nbsp;·&nbsp;
-                Semester&nbsp;&nbsp;<b>{{ student.semester }}</b>
-            </p>
+            <div class="hero">
+                <div class="avatar">{{ initials }}</div>
+                <div class="hero-id">
+                    <h1>{{ student.name }}</h1>
+                    <p class="meta-line">
+                        USN&nbsp;&nbsp;<b>{{ student.usn }}</b> &nbsp;·&nbsp;
+                        Branch&nbsp;&nbsp;<b>{{ student.branch }}</b> &nbsp;·&nbsp;
+                        Semester&nbsp;&nbsp;<b>{{ student.semester }}</b>
+                    </p>
+                </div>
+                <div class="ring {% if overall_att < 75 %}ring--alert{% endif %}" style="--pct: {{ overall_att }};">
+                    <div class="ring-inner">
+                        <span class="num">{{ overall_att|round(0, 'floor')|int }}<span class="pct-sign">%</span></span>
+                        <span class="pct-sign">ATTEND.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-card {% if overall_att < 75 %}stat-card--alert{% else %}stat-card--good{% endif %}">
+                    <div class="stat-label">Overall Attendance</div>
+                    <div class="stat-value">{{ overall_att|round(1) }}%</div>
+                    <div class="stat-sub">across {{ ns.att_count }} subjects</div>
+                </div>
+                <div class="stat-card {% if ns.flagged > 0 %}stat-card--alert{% else %}stat-card--good{% endif %}">
+                    <div class="stat-label">Below Minimum</div>
+                    <div class="stat-value">{{ ns.flagged }}</div>
+                    <div class="stat-sub">subject{{ 's' if ns.flagged != 1 else '' }} under 75%</div>
+                </div>
+                <div class="stat-card stat-card--brass">
+                    <div class="stat-label">Semesters Recorded</div>
+                    <div class="stat-value">{{ results.keys()|list|length }}</div>
+                    <div class="stat-sub">of results on file</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Overall Average</div>
+                    <div class="stat-value">{{ overall_avg_marks|round(1) }}</div>
+                    <div class="stat-sub">marks across all subjects</div>
+                </div>
+            </div>
 
             <h3>Current Semester Attendance</h3>
-            <table class="register">
-                <tr>
-                    <th>Subject</th>
-                    <th>Held</th>
-                    <th>Attended</th>
-                    <th>Attendance</th>
-                </tr>
-                {% for row in attendance %}
-                <tr>
-                    <td>{{ row.subject_name }}</td>
-                    <td>{{ row.classes_held }}</td>
-                    <td>{{ row.classes_attended }}</td>
-                    <td class="{% if row.percentage < 75 %}pct-low{% else %}pct-ok{% endif %}">
-                        {{ row.percentage }}%{% if row.percentage < 75 %} — below minimum{% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
+            {% for row in attendance %}
+            <div class="bar-row">
+                <span class="bar-label">{{ row.subject_name }}</span>
+                <span class="bar-count">{{ row.classes_attended }}/{{ row.classes_held }}</span>
+                <span class="bar-track">
+                    <span class="bar-fill {% if row.percentage < 75 %}bar-fill--low{% endif %}" style="width: {{ row.percentage }}%;"></span>
+                </span>
+                <span class="bar-pct {% if row.percentage < 75 %}pct-low{% else %}pct-ok{% endif %}">
+                    {{ row.percentage }}%{% if row.percentage < 75 %} ⚠{% endif %}
+                </span>
+            </div>
+            {% endfor %}
 
             <h3>Past Semester Results</h3>
-            {% for sem, subjects in results.items() %}
-                <h4>Semester {{ sem }}</h4>
-                <table class="register">
-                    <tr>
-                        <th>Subject</th>
-                        <th>Marks</th>
-                        <th>Grade</th>
-                    </tr>
-                    {% for row in subjects %}
-                    <tr>
-                        <td>{{ row.subject_name }}</td>
-                        <td>{{ row.marks }}</td>
-                        <td>
-                            <span class="stamp {% if row.grade in ['A+','A'] %}stamp-a{% elif row.grade == 'F' %}stamp-f{% else %}stamp-b{% endif %}">{{ row.grade }}</span>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
+            {% for sem, subjects in results.items()|sort %}
+                {% set sem_avg = (subjects|sum(attribute='marks') / subjects|length) if subjects else 0 %}
+                <details class="sem-block" {% if sem == latest_sem %}open{% endif %}>
+                    <summary>
+                        Semester {{ sem }}
+                        <span class="sem-avg">avg {{ sem_avg|round(1) }}</span>
+                    </summary>
+                    <div class="sem-body">
+                        <table class="register">
+                            <tr>
+                                <th>Subject</th>
+                                <th>Marks</th>
+                                <th>Grade</th>
+                            </tr>
+                            {% for row in subjects %}
+                            <tr>
+                                <td>{{ row.subject_name }}</td>
+                                <td>{{ row.marks }}</td>
+                                <td>
+                                    <span class="stamp {% if row.grade in ['A+','A'] %}stamp-a{% elif row.grade == 'F' %}stamp-f{% else %}stamp-b{% endif %}">{{ row.grade }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </details>
             {% endfor %}
         </div>
     </div>

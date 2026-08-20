@@ -10,6 +10,10 @@
         <nav><a href="/admin/dashboard">Dashboard</a><a href="/admin/logout">Logout</a></nav>
     </div>
 
+    {% set name_parts = student.name.split(' ') %}
+    {% set initials = name_parts[0][0] ~ (name_parts[-1][0] if name_parts|length > 1 else '') %}
+    {% set latest_sem = results.keys()|list|sort|last if results else none %}
+
     <div class="page">
         <div class="link-row"><a href="/admin/dashboard">&larr; Back to Dashboard</a></div>
 
@@ -21,51 +25,72 @@
                 <div class="alert alert-error">{{ error }}</div>
             {% endif %}
 
-            <h1>{{ student.name }}</h1>
-            <p class="meta-line">
-                USN&nbsp;&nbsp;<b>{{ student.usn }}</b> &nbsp;·&nbsp;
-                Branch&nbsp;&nbsp;<b>{{ student.branch }}</b> &nbsp;·&nbsp;
-                Semester&nbsp;&nbsp;<b>{{ student.semester }}</b>
-            </p>
+            <div class="hero">
+                <div class="avatar">{{ initials }}</div>
+                <div class="hero-id">
+                    <h1>{{ student.name }}</h1>
+                    <p class="meta-line">
+                        USN&nbsp;&nbsp;<b>{{ student.usn }}</b> &nbsp;·&nbsp;
+                        Branch&nbsp;&nbsp;<b>{{ student.branch }}</b> &nbsp;·&nbsp;
+                        Semester&nbsp;&nbsp;<b>{{ student.semester }}</b>
+                    </p>
+                </div>
+            </div>
 
             <h3>Update Attendance — Current Semester</h3>
             {% for row in attendance %}
+            {% set pct = (100 * row.classes_attended / row.classes_held)|round(1) if row.classes_held else 0 %}
             <div class="edit-row">
-                <form method="POST" action="/admin/student/{{ student.usn }}/update-attendance">
+                <form method="POST" action="/admin/student/{{ student.usn }}/update-attendance" class="attendance-form" data-held="held-{{ loop.index }}" data-attended="attended-{{ loop.index }}" data-fill="fill-{{ loop.index }}" data-pct="pct-{{ loop.index }}">
                     <input type="hidden" name="subject_code" value="{{ row.subject_code }}">
                     <span class="subj">{{ row.subject_name }}</span>
                     <span>
                         <span class="lbl">Held</span><br>
-                        <input type="number" name="classes_held" value="{{ row.classes_held }}" min="0">
+                        <input type="number" id="held-{{ loop.index }}" name="classes_held" value="{{ row.classes_held }}" min="0">
                     </span>
                     <span>
                         <span class="lbl">Attended</span><br>
-                        <input type="number" name="classes_attended" value="{{ row.classes_attended }}" min="0">
+                        <input type="number" id="attended-{{ loop.index }}" name="classes_attended" value="{{ row.classes_attended }}" min="0">
                     </span>
+                    <span style="flex:1; min-width:120px;">
+                        <span class="lbl">Preview</span>
+                        <span class="bar-track" style="display:block; margin-top:6px;">
+                            <span class="bar-fill {% if pct < 75 %}bar-fill--low{% endif %}" id="fill-{{ loop.index }}" style="width: {{ pct }}%;"></span>
+                        </span>
+                    </span>
+                    <span class="bar-pct {% if pct < 75 %}pct-low{% else %}pct-ok{% endif %}" id="pct-{{ loop.index }}" style="width:56px;">{{ pct }}%</span>
                     <button type="submit" class="btn btn-sm">Update</button>
                 </form>
             </div>
             {% endfor %}
 
             <h3>Past Semester Results</h3>
-            {% for sem, subjects in results.items() %}
-                <h4>Semester {{ sem }}</h4>
-                <table class="register">
-                    <tr>
-                        <th>Subject</th>
-                        <th>Marks</th>
-                        <th>Grade</th>
-                    </tr>
-                    {% for row in subjects %}
-                    <tr>
-                        <td>{{ row.subject_name }}</td>
-                        <td>{{ row.marks }}</td>
-                        <td>
-                            <span class="stamp {% if row.grade in ['A+','A'] %}stamp-a{% elif row.grade == 'F' %}stamp-f{% else %}stamp-b{% endif %}">{{ row.grade }}</span>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </table>
+            {% for sem, subjects in results.items()|sort %}
+                {% set sem_avg = (subjects|sum(attribute='marks') / subjects|length) if subjects else 0 %}
+                <details class="sem-block" {% if sem == latest_sem %}open{% endif %}>
+                    <summary>
+                        Semester {{ sem }}
+                        <span class="sem-avg">avg {{ sem_avg|round(1) }}</span>
+                    </summary>
+                    <div class="sem-body">
+                        <table class="register">
+                            <tr>
+                                <th>Subject</th>
+                                <th>Marks</th>
+                                <th>Grade</th>
+                            </tr>
+                            {% for row in subjects %}
+                            <tr>
+                                <td>{{ row.subject_name }}</td>
+                                <td>{{ row.marks }}</td>
+                                <td>
+                                    <span class="stamp {% if row.grade in ['A+','A'] %}stamp-a{% elif row.grade == 'F' %}stamp-f{% else %}stamp-b{% endif %}">{{ row.grade }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </details>
             {% endfor %}
 
             <h3>Add / Update a Result</h3>
@@ -91,5 +116,29 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // Live-update each attendance preview bar as the admin edits the numbers,
+        // before they even submit — same 75% threshold logic as the backend view.
+        document.querySelectorAll('.attendance-form').forEach(form => {
+            const held = document.getElementById(form.dataset.held);
+            const attended = document.getElementById(form.dataset.attended);
+            const fill = document.getElementById(form.dataset.fill);
+            const pctLabel = document.getElementById(form.dataset.pct);
+
+            function recalc() {
+                const h = parseFloat(held.value) || 0;
+                const a = parseFloat(attended.value) || 0;
+                const pct = h > 0 ? Math.round((a / h) * 1000) / 10 : 0;
+                fill.style.width = Math.min(pct, 100) + '%';
+                pctLabel.textContent = pct + '%';
+                fill.classList.toggle('bar-fill--low', pct < 75);
+                pctLabel.classList.toggle('pct-low', pct < 75);
+                pctLabel.classList.toggle('pct-ok', pct >= 75);
+            }
+            held.addEventListener('input', recalc);
+            attended.addEventListener('input', recalc);
+        });
+    </script>
 </body>
 </html>
